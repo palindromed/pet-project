@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import pytest
+import os
 from sqlalchemy import create_engine
 
 from ..models import DBSession, Base
 
+TEST_DATABASE_URL = os.environ.get("TEST_DB_URL", "sqlite://")
 
 
 @pytest.fixture(scope='session')

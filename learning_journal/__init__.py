@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 
@@ -11,6 +12,11 @@ from .models import (
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
+
+    database_url = os.environ.get('DATABASE_URL', None)
+    if database_url:
+        settings['sqlalchemy.url'] = database_url
+
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
