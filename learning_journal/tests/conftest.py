@@ -5,8 +5,6 @@ from sqlalchemy import create_engine
 from ..models import DBSession, Base
 
 
-#TEST_DATABASE_URL = 'postgres:////tmp/test_db.sqlite'
-TEST_DATABASE_URL = 'postgresql://hannahkrager@localhost:5432/author'
 
 @pytest.fixture(scope='session')
 def sqlengine(request):
