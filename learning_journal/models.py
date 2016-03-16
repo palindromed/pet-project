@@ -32,4 +32,4 @@ class Post(Base):
     post_id = Column(Integer, primary_key=True)
     title = Column(UnicodeText(128), unique=True, nullable=False)
     text = Column(UnicodeText, nullable=False)
-    created = Column(DateTime(timezone=True))
+    created = Column(DateTime(timezone=True), server_default=text('NOW()'))
