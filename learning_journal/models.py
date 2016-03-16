@@ -7,6 +7,7 @@ from sqlalchemy import (
     )
 
 from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
 
 from sqlalchemy.orm import (
     scoped_session,
@@ -32,4 +33,4 @@ class Post(Base):
     post_id = Column(Integer, primary_key=True)
     title = Column(UnicodeText(128), unique=True, nullable=False)
     text = Column(UnicodeText, nullable=False)
-    created = Column(DateTime(timezone=True), server_default=text('NOW()'))
+    created = Column(DateTime(timezone=True), default=datetime.utcnow)
