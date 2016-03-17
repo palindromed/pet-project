@@ -26,27 +26,16 @@ def list_view(request):
         posts = DBSession.query(Post).all()
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
-    return {
-        'posts': [
-            {'title': post.title, 'text': post.text, 'created': post.created}
-            for post in posts
-        ]
-    }
-    # return posts
+    return {'posts': posts}
 
 
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
 def detail_view(request):
     try:
-        post = DBSession.query(Post).filter(Post.id == request.matchdict['post_id'])
+        post = DBSession.query(Post).filter(Post.id == request.matchdict['post_id']).first()
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
-    return {
-        'title': post.title,
-        'text': post.text,
-        'created': post.created,
-    }
-    # return post
+    return {'post': post}
 
 
 conn_err_msg = """\
