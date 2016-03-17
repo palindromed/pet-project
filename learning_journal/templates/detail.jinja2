@@ -3,5 +3,5 @@
 <main> {{ post.text }} </main>
 <br>
 <a href="/"><input name="home" type="button" value="Home"/></a>
-<a href="/edit/{{post.id}}"><input name="edit" type="button" value="Edit"/></a>
+<a href="{{request.route_url('edit', post_id=post.id)}}"><input name="edit" type="button" value="Edit"/></a>
 

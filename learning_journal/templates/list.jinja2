@@ -9,7 +9,7 @@
 
     {% for post in posts %}
 
-   <a href="/post/{{post.id}}" +><h3> {{ post.title }} </h3></a>
+   <a href="{{request.route_url('detail', post_id=post.id)}}" +><h3> {{ post.title }} </h3></a>
    <p> {{ post.created.strftime('%m-%d-%Y') }} </p>
    <p> {{ post.text }} </p>
 
