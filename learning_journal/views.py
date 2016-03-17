@@ -10,14 +10,43 @@ from .models import (
     )
 
 
-@view_config(route_name='home', renderer='templates/mytemplate.pt')
-def my_view(request):
-    # try:
-    #     one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
-    # except DBAPIError:
-    #     return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    # return {'one': one, 'project': 'learning-journal'}
-    pass
+# @view_config(route_name='home', renderer='templates/mytemplate.pt')
+# def my_view(request):
+#     try:
+#         one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
+#     except DBAPIError:
+#         return Response(conn_err_msg, content_type='text/plain', status_int=500)
+#     return {'one': one, 'project': 'learning-journal'}
+#     pass
+
+
+@view_config(route_name='list', renderer='templates/list.jinja')
+def list_view(request):
+    try:
+        posts = DBSession.query(Post).all()
+    except DBAPIError:
+        return Response("error!", content_type='text/plain', status_int=500)
+    # return {
+    #     'posts': [
+    #         {'title': post.title, 'text': post.text, 'created': post.created}
+    #         for post in posts
+    #     ]
+    # }
+    return posts
+
+
+@view_config(route_name='detail', renderer='templates/detail.jinja')
+def detail_view(request):
+    try:
+        post = DBSession.query(Post).filter(Post.id == request.matchdict['post_id'])
+    except DBAPIError:
+        return Response("error!", content_type='text/plain', status_int=500)
+    # return {
+    #     'title': post.title,
+    #     'text': post.text,
+    #     'created': post.created,
+    # }
+    return post
 
 
 conn_err_msg = """\

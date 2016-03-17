@@ -4,7 +4,6 @@ from sqlalchemy import (
     Integer,
     Unicode,
     DateTime,
-    String
     )
 
 from sqlalchemy.ext.declarative import declarative_base
