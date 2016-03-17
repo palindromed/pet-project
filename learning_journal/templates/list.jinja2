@@ -1,16 +1,11 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+        {% block title %}Home/List view{% endblock %}
 
-<html>
-    <head>
-        <title>Home/List view</title>
-    </head>
-
-    <body>
-
+        {% block content %}
     {% for post in posts %}
 
    <a href="{{request.route_url('detail', post_id=post.id)}}" +><h3> {{ post.title }} </h3></a>
-   <p> {{ post.created.strftime('%m-%d-%Y') }} </p>
+   <p> {{ post.created.strftime('%Y-%m-%d') }} </p>
    <p> {{ post.text }} </p>
 
    <br>
@@ -18,9 +13,5 @@
     {% endfor %}
     <a href="/create"><input name="create" type="button" value="Create"/></a>
 
-    </body>
-
-
-
-</html>
+{% endblock %}
 
