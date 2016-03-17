@@ -38,6 +38,15 @@ def detail_view(request):
     return {'post': post}
 
 
+@view_config(route_name='edit', renderer='templates/edit.jinja2')
+def edit_view(request):
+    try:
+        post = DBSession.query(Post).filter(Post.id == request.matchdict['post_id']).first()
+    except DBAPIError:
+        return Response("error!", content_type='text/plain', status_int=500)
+    return {'post': post}
+
+
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
