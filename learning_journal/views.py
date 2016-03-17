@@ -20,33 +20,33 @@ from .models import (
 #     pass
 
 
-@view_config(route_name='list', renderer='templates/list.jinja')
+@view_config(route_name='list', renderer='templates/list.jinja2')
 def list_view(request):
     try:
         posts = DBSession.query(Post).all()
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
-    # return {
-    #     'posts': [
-    #         {'title': post.title, 'text': post.text, 'created': post.created}
-    #         for post in posts
-    #     ]
-    # }
-    return posts
+    return {
+        'posts': [
+            {'title': post.title, 'text': post.text, 'created': post.created}
+            for post in posts
+        ]
+    }
+    # return posts
 
 
-@view_config(route_name='detail', renderer='templates/detail.jinja')
+@view_config(route_name='detail', renderer='templates/detail.jinja2')
 def detail_view(request):
     try:
         post = DBSession.query(Post).filter(Post.id == request.matchdict['post_id'])
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
-    # return {
-    #     'title': post.title,
-    #     'text': post.text,
-    #     'created': post.created,
-    # }
-    return post
+    return {
+        'title': post.title,
+        'text': post.text,
+        'created': post.created,
+    }
+    # return post
 
 
 conn_err_msg = """\
