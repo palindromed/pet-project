@@ -1,5 +1,4 @@
 # coding=utf-8
-from datetime import timezone
 
 
 def dateformat(date):
