@@ -1,9 +1,9 @@
 # coding=utf-8
+from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
-from pyramid.renderers import render_to_response
 from pyramid.view import view_config
-from wtforms import Form, StringField, validators, TextAreaField
 from sqlalchemy.exc import DBAPIError
+from wtforms import Form, StringField, validators, TextAreaField
 
 from .models import (
     DBSession,
@@ -54,16 +54,17 @@ def create_view(request):
         title = StringField('Title', [validators.Length(min=4, max=128)])
         text = TextAreaField('Text', [validators.Length(min=6)])
     form = PostForm(request.POST)
+    print("~~FORM~~", form.title.data, form.text.data)
     if request.method == 'POST' and form.validate():
-        post = Post()
-        post.title = form.title.data
-        post.text = form.text.data
-        DBSession.add(post)
-        # redirect('detail', post_id=post.id)
-    return render_to_response('templates/add_entry.jinja2', value={'form': form})
-
-
-
+        post = Post(title=form.title.data, text=form.text.data)
+        try:
+            DBSession.add(post)
+            DBSession.flush()
+            return HTTPFound(request.route_url('detail', post_id=post.id))
+        except DBAPIError:
+            # request.session.flash("Can't make that post!")
+            form.errors.setdefault('error', []).append('Title must be unique!')
+    return {'form': form}
 
 
 conn_err_msg = """\
