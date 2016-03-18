@@ -21,6 +21,7 @@ requires = [
 
     'future',
     'psycopg2',
+    'markdown',
     ]
 
 tests_require = ['pytest', 'tox']
