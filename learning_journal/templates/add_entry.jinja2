@@ -19,11 +19,11 @@
           <legend>Create a New Blog Post</legend>
 
           <label>Title:
-          <input id="title" type="text" name="title" value="{{post.title}}" required>
+          <input id="title" type="text" name="title" value="{{form.title}}" required>
           </label>
           <br>
           <label>Body:
-          <textarea value="{{post.text}}" rows="4" columns="30" name="text" placeholder="Post Content" required></textarea><br>
+          <textarea value="{{form.text}}" rows="4" columns="30" name="text" placeholder="Post Content" required></textarea><br>
 
           <input type="submit" id="savePost" class="savePost" name="savePost" value="Submit"/>
           </label>

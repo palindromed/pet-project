@@ -47,6 +47,7 @@ def edit_view(request):
         return Response("error!", content_type='text/plain', status_int=500)
     return {'post': post}
 
+
 @view_config(route_name='add_entry', renderer="templates/add_entry.jinja2")
 def create_view(request):
     class PostForm(Form):
@@ -55,11 +56,11 @@ def create_view(request):
     form = PostForm(request.POST)
     if request.method == 'POST' and form.validate():
         post = Post()
-        post.title = form.title
-        post.text = form.text
-        post.save()
-        #redirect('detail', post_id=post.id)
-    return render_to_response('templates/add_entry', form=form)
+        post.title = form.title.data
+        post.text = form.text.data
+        DBSession.add(post)
+        # redirect('detail', post_id=post.id)
+    return render_to_response('templates/add_entry.jinja2', value={'form': form})
 
 
 

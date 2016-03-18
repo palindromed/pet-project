@@ -22,6 +22,7 @@ requires = [
     'future',
     'psycopg2',
     'markdown',
+    'wtforms',
     ]
 
 tests_require = ['pytest', 'tox']
