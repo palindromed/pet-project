@@ -1,4 +1,35 @@
-<form>
-    <input type='text' name='title'>
-    <input 
- </form>
+{{message}}
+{% extends "base.html" %}
+{% block title %}Create a New Post{% endblock %}
+
+{% block content%}
+<a href="/"><input name="home" type="button" value="Home"/></a>
+
+    <section>
+      <header>
+        <h1>Create Post</h1>
+      </header>
+    </section>
+
+      <main>
+        <section >
+        <form method="POST" action="/create">
+
+          <fieldset>
+          <legend>Create a New Blog Post</legend>
+
+          <label>Title:
+          <input id="title" type="text" name="title" value="{{post.title}}" required>
+          </label>
+          <br>
+          <label>Body:
+          <textarea value="{{post.text}}" rows="4" columns="30" name="text" placeholder="Post Content" required></textarea><br>
+
+          <input type="submit" id="savePost" class="savePost" name="savePost" value="Submit"/>
+          </label>
+          </fieldset>
+        </form>
+          </section>
+
+      </main>
+  {% endblock %}

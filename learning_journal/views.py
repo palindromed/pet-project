@@ -1,7 +1,8 @@
 # coding=utf-8
 from pyramid.response import Response
+from pyramid.renderers import render_to_response
 from pyramid.view import view_config
-
+from wtforms import Form, StringField, validators, TextAreaField
 from sqlalchemy.exc import DBAPIError
 
 from .models import (
@@ -45,6 +46,23 @@ def edit_view(request):
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
     return {'post': post}
+
+@view_config(route_name='add_entry', renderer="templates/add_entry.jinja2")
+def create_view(request):
+    class PostForm(Form):
+        title = StringField('Title', [validators.Length(min=4, max=128)])
+        text = TextAreaField('Text', [validators.Length(min=6)])
+    form = PostForm(request.POST)
+    if request.method == 'POST' and form.validate():
+        post = Post()
+        post.title = form.title
+        post.text = form.text
+        post.save()
+        #redirect('detail', post_id=post.id)
+    return render_to_response('templates/add_entry', form=form)
+
+
+
 
 
 conn_err_msg = """\
