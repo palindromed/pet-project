@@ -8,10 +8,7 @@ from sqlalchemy import (
     Unicode,
     DateTime,
     )
-
 from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
-
 from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
