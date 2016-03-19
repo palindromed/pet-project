@@ -30,7 +30,7 @@ def sqlengine(request):
     return engine
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def dbtransaction(request, sqlengine):
     connection = sqlengine.connect()
     transaction = connection.begin()
@@ -53,7 +53,6 @@ def app(dbtransaction, request):
     from learning_journal import main
     settings = get_appsettings(request.config.option.ini)
     settings['sqlalchemy.url'] = TEST_DATABASE_URL
-    os.environ['DATABASE_URL'] = TEST_DATABASE_URL
     app = main({}, **settings)
     return TestApp(app)
 
@@ -65,9 +64,9 @@ def new_post(request):
     DBSession.add(post)
     DBSession.flush()
 
-    # def teardown():
-    #     DBSession.query(Post).filter(Post.id == post.id).delete()
-    #     DBSession.flush()
-    #
-    # request.addfinalizer(teardown)
+    def teardown():
+        DBSession.delete(post)
+        DBSession.flush()
+
+    request.addfinalizer(teardown)
     return post

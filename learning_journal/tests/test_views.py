@@ -15,13 +15,13 @@ from learning_journal.views import (
 def test_list_view(dbtransaction, new_post):
     response_data = list_view(DummyRequest())
     posts = response_data['posts']
-    assert posts == [new_post]
+    assert new_post in posts
 
 
 def test_list_route(app, dbtransaction, new_post):
     response = app.get("/")
     assert response.status_code == 200
-    # assert new_post.text.encode('utf-8') in response.body
+    assert new_post.text.encode('utf-8') in response.body
 
 
 def test_detail_view(dbtransaction, new_post):
