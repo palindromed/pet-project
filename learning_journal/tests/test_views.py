@@ -39,16 +39,42 @@ def test_detail_route(app, dbtransaction, new_post):
     assert new_post.text.encode('utf-8') in response.body
 
 
-def test_add(dbtransaction, app):
-    """Test that add view creates a new Entry in database."""
+def test_add_view(dbtransaction, app):
+    """Test that create view creates a new Entry in database."""
     results = DBSession.query(Post).filter(
         Post.title == 'TEST Title' and Post.text == 'TEST Text')
     assert results.count() == 0
     params = {
-        'title': 'TEST Title',
-        'text': 'TEST Text'
+        'title': 'This is a title',
+        'text': 'Here is some text'
     }
     app.post('/create', params=params, status='3*')
     results = DBSession.query(Post).filter(
-        Post.title == 'TEST Title' and Post.text == 'TEST Text')
+        Post.title == 'This is a title' and Post.text == 'Here is some text')
     assert results.count() == 1
+
+
+def test_add_route(app, dbtransaction):
+    """Test that the create view works"""
+    response = app.get("/create")
+    assert response.status_code == 200
+
+
+def test_edit_view(dbtransaction, app, new_post):
+    """Test that edit can successfully update existing post"""
+    new_post.title = new_post.title + "I'm new"
+    new_post.text = new_post.text + "I'm new too"
+    params = {
+        'title': new_post.title,
+        'text': new_post.text
+    }
+    app.post('/edit/{}'.format(new_post.id), params=params, status='3*')
+    results = DBSession.query(Post).filter(
+        Post.title == new_post.title and Post.text == new_post.text)
+    assert results.count() == 1
+
+
+def test_edit_route(app, dbtransaction, new_post):
+    response = app.get('/post/{}'.format(new_post.id))
+    assert response.status_code == 200
+    assert new_post.text.encode('utf-8') in response.body

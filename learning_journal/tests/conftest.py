@@ -4,17 +4,14 @@ from __future__ import unicode_literals
 import pytest
 import os
 
-
+from pyramid.paster import get_appsettings
 from sqlalchemy import create_engine
-#from webtest import TestApp
+from webtest import TestApp
 
 from ..models import DBSession, Base, Post
 
-# TEST_DATABASE_URL = os.environ.get("TEST_DB_URL")
-# PARENT_DIR = os.path.dirname(__file__)
-# GPARENT_DIR = os.path.join(PARENT_DIR, '..')
-# GGPARENT_DIR = os.path.join(GPARENT_DIR, '..')
-# CONFIG_URI = os.path.join(GGPARENT_DIR, 'development.ini')
+TEST_DATABASE_URL = os.environ.get("TEST_DB_URL")
+
 
 def pytest_addoption(parser):
     parser.addoption("--ini", action="store", metavar="INI_FILE")
@@ -37,7 +34,7 @@ def sqlengine(request):
 def dbtransaction(request, sqlengine):
     connection = sqlengine.connect()
     transaction = connection.begin()
-    DBSession.configure(bind=connection, expire_on_commit=False)
+    DBSession.configure(bind=connection)
 
     def teardown():
         transaction.rollback()
@@ -52,11 +49,9 @@ def dbtransaction(request, sqlengine):
 # use fixture
 # noinspection PyUnusedLocal,PyShadowingNames
 @pytest.fixture()
-def app(dbtransaction):
+def app(dbtransaction, request):
     from learning_journal import main
-    from webtest import TestApp
-    from pyramid.paster import get_appsettings
-    settings = get_appsettings(CONFIG_URI)
+    settings = get_appsettings(request.config.option.ini)
     settings['sqlalchemy.url'] = TEST_DATABASE_URL
     app = main({}, **settings)
     return TestApp(app)
