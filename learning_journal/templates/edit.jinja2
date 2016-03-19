@@ -6,7 +6,6 @@
 {% block content %}
 <a href="/"><input name="home" type="button" value="Home"/></a>
 
-
     <section>
       <header>
         <h1>Edit Post</h1>
@@ -15,21 +14,14 @@
 
       <main>
         <section >
-        <form id="submitPost" method="submit">
+<form method='POST' action=''>
+        <div>{{form.title.label}}: {{ form.title() }}</div>
+        <div>{{form.text.label}}: {{ form.text() }}</div>
 
-          <fieldset>
-          <legend>Edit a Blog Post</legend>
 
-          <label>Title:
-          <input id="title" type="text" name="title" value="{{post.title}}" required>
-          </label>
-          <br>
-          <label>Body:
-          <textarea id="body" rows="4" columns="30" name="body" required>{{post.text}}</textarea><br>
-
-          <input type="submit" id="savePost" class="savePost" name="savePost" value="Submit"/>
-          </label>
-          </fieldset>
+          <div><ul>{% for e in form.errors %}{% for message in form.errors[e] %}<li>{{e}}: {{message}}</li>{% endfor %}{% endfor %}</div>
+        </section>
+          <div><INPUT TYPE="submit" VALUE="submit"></div>
         </form>
           </section>
 

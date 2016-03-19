@@ -25,7 +25,8 @@ requires = [
     'wtforms',
     ]
 
-tests_require = ['pytest-cov', 'tox']
+tests_require = ['pytest', 'tox', 'WebTest']
+
 dev_requires = ['ipython', 'pyramid-ipython']
 
 setup(name='learning-journal',

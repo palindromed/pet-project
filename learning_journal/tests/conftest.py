@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 
 from ..models import DBSession, Base
 
-TEST_DATABASE_URL = os.environ.get("TEST_DB_URL", "sqlite://")
+TEST_DATABASE_URL = os.environ.get("TEST_DB_URL")
 
 
 @pytest.fixture(scope='session')
@@ -21,7 +21,7 @@ def sqlengine(request):
     return engine
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def dbtransaction(request, sqlengine):
     connection = sqlengine.connect()
     transaction = connection.begin()
