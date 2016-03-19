@@ -31,32 +31,33 @@ def detail_view(request):
 
 @view_config(route_name='edit', renderer='templates/edit.jinja2')
 def edit_view(request):
-    try:
-        post_to_edit = DBSession.query(Post).filter(Post.id == request.matchdict['post_id']).first()
-        form = PostForm(request.POST, post_to_edit)
-        if request.method == 'POST' and form.validate():
+    post_to_edit = DBSession.query(Post).filter(Post.id == request.matchdict['post_id']).first()
+    form = PostForm(request.POST, post_to_edit)
+    if request.method == 'POST' and form.validate():
+        try:
             form.populate_obj(post_to_edit)
-            post_to_edit.title = request.params['title']
-            post_to_edit.text = request.params['text']
-            post_id = post_to_edit.id
-            re_route = request.route_url('detail', post_id=post_id)
+            re_route = request.route_url('detail', post_id=post_to_edit.id)
             return HTTPFound(location=re_route)
-    except DBAPIError:
-        return Response("error!", content_type='text/plain', status_int=500)
-    return {'form': form}
+        except DBAPIError:
+            form.errors.setdefault('error', []).append('Title must be unique!')
+        # return Response("error!", content_type='text/plain', status_int=500)
+    return {'form': form, 'use_case': 'Edit'}
 
 
-@view_config(route_name='add_entry', renderer="templates/add_entry.jinja2")
+@view_config(route_name='add_entry', renderer="templates/edit.jinja2")
 def create_view(request):
     form = PostForm(request.POST)
     if request.method == 'POST' and form.validate():
         new_post = Post(title=form.title.data, text=form.text.data)
-        DBSession.add(new_post)
-        DBSession.flush()
-        detail_id = new_post.id
-        re_route = request.route_url('detail', post_id=detail_id)
-        return HTTPFound(location=re_route)
-    return {'form': form}
+        try:
+            DBSession.add(new_post)
+            DBSession.flush()
+            detail_id = new_post.id
+            re_route = request.route_url('detail', post_id=detail_id)
+            return HTTPFound(location=re_route)
+        except DBAPIError:
+            form.errors.setdefault('error', []).append('Title must be unique!')
+    return {'form': form, 'use_case': 'Create'}
 
 
 conn_err_msg = """\
