@@ -1,9 +1,10 @@
+import datetime
 from sqlalchemy import (
     Column,
-    Index,
     Integer,
-    UnicodeText,
+    Unicode,
     DateTime,
+    String
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -20,17 +21,9 @@ DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
 
-# class MyModel(Base):
-#     __tablename__ = 'models'
-#     id = Column(Integer, primary_key=True)
-#     name = Column(Text)
-#     value = Column(Integer)
-#
-# Index('my_index', MyModel.name, unique=True, mysql_length=255)
-
 class Post(Base):
     __tablename__ = "posts"
-    post_id = Column(Integer, primary_key=True)
-    title = Column(UnicodeText(128), unique=True, nullable=False)
-    text = Column(UnicodeText, nullable=False)
-    created = Column(DateTime(timezone=True), default=datetime.utcnow)
+    id = Column(Integer, primary_key=True)
+    title = Column(Unicode(length=128), unique=True)
+    text = Column(Unicode)
+    created = Column(DateTime, default=datetime.datetime.utcnow)
