@@ -10,7 +10,7 @@ from webtest import TestApp
 
 from ..models import DBSession, Base, Post
 
-TEST_DATABASE_URL = "sqlite:///"  # os.environ.get("TEST_DB_URL")
+TEST_DATABASE_URL = os.environ.get("TEST_DB_URL")
 
 
 def pytest_addoption(parser):
