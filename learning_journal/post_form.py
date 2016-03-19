@@ -1,7 +1,10 @@
+# coding=utf-8
+from __future__ import unicode_literals
+
 from wtforms import Form, StringField, validators, TextAreaField
 
 
-class PostForm(Form):
+class ModifyPostForm(Form):
     """Create class for form to edit/create a post"""
 
     title = StringField('title', [validators.Length(min=4, max=128)])

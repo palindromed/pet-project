@@ -5,14 +5,12 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 from pyramid.view import view_config
 from sqlalchemy.exc import DBAPIError
-from wtforms import Form, StringField, validators, TextAreaField
 
 from .models import (
     DBSession,
     Post,
     )
-
-from .post_form import PostForm
+from .post_form import ModifyPostForm
 
 
 @view_config(route_name='list', renderer='templates/list.jinja2')
@@ -40,7 +38,7 @@ def edit_view(request):
     print(post_to_edit)
     print("available postids:", list(DBSession.query(Post).all()))
     # TODO: as you can see from the above debug printout, the new_post in our tests does not actually show up here
-    form = PostForm(request.POST, post_to_edit)
+    form = ModifyPostForm(request.POST, post_to_edit)
     if not post_to_edit:
         form.errors.setdefault('error', []).append('That post does not exist!')
     elif request.method == 'POST' and form.validate():
@@ -56,7 +54,7 @@ def edit_view(request):
 
 @view_config(route_name='add_entry', renderer="templates/edit.jinja2")
 def create_view(request):
-    form = PostForm(request.POST)
+    form = ModifyPostForm(request.POST)
     if request.method == 'POST' and form.validate():
         new_post = Post(title=form.title.data, text=form.text.data)
         try:
