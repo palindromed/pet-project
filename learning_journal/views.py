@@ -1,4 +1,6 @@
 # coding=utf-8
+from __future__ import unicode_literals
+
 from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -33,7 +35,7 @@ def list_view(request):
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
 def detail_view(request):
     try:
-        post = DBSession.query(Post).filter(Post.id == request.matchdict['post_id']).first()
+        post = DBSession.query(Post).filter(Post.id == int(request.matchdict['post_id'])).first()
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
     return {'post': post}
@@ -82,4 +84,3 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
-

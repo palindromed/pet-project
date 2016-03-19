@@ -1,11 +1,20 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import pytest
 import os
+
+from pyramid.paster import get_appsettings
 from sqlalchemy import create_engine
+from webtest import TestApp
 
-from ..models import DBSession, Base
+from ..models import DBSession, Base, Post
 
-TEST_DATABASE_URL = os.environ.get("TEST_DB_URL", "sqlite://")
+TEST_DATABASE_URL = os.environ.get("TEST_DB_URL")
+
+
+def pytest_addoption(parser):
+    parser.addoption("--ini", action="store", metavar="INI_FILE")
 
 
 @pytest.fixture(scope='session')
@@ -35,3 +44,30 @@ def dbtransaction(request, sqlengine):
     request.addfinalizer(teardown)
 
     return connection
+
+
+# use fixture
+# noinspection PyUnusedLocal,PyShadowingNames
+@pytest.fixture()
+def app(dbtransaction, request):
+    from learning_journal import main
+    settings = get_appsettings(request.config.option.ini)
+    settings['sqlalchemy.url'] = TEST_DATABASE_URL
+    os.environ['DATABASE_URL'] = TEST_DATABASE_URL
+    app = main({}, **settings)
+    return TestApp(app)
+
+
+@pytest.fixture(scope='function')
+def new_post(request):
+    """Return a fresh new Entry and flush to the database."""
+    post = Post(title="test post title", text="aaaaaaaaaaaa")
+    DBSession.add(post)
+    DBSession.flush()
+
+    # def teardown():
+    #     DBSession.query(Post).filter(Post.id == post.id).delete()
+    #     DBSession.flush()
+    #
+    # request.addfinalizer(teardown)
+    return post

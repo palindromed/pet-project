@@ -1,16 +1,15 @@
 # coding=utf-8
+from __future__ import unicode_literals
+
 import os
 import sys
-import transaction
-
-from sqlalchemy import engine_from_config
 
 from pyramid.paster import (
     get_appsettings,
     setup_logging,
-    )
-
+)
 from pyramid.scripts.common import parse_vars
+from sqlalchemy import engine_from_config
 
 from ..models import (
     DBSession,
@@ -41,6 +40,3 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
-    # with transaction.manager:  # TODO: replace this?
-    #     model = Post(name='Post', value=1)
-    #     DBSession.add(model)
