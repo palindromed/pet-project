@@ -4,14 +4,17 @@ from __future__ import unicode_literals
 import pytest
 import os
 
-from pyramid.paster import get_appsettings
+
 from sqlalchemy import create_engine
-from webtest import TestApp
+#from webtest import TestApp
 
 from ..models import DBSession, Base, Post
 
-TEST_DATABASE_URL = os.environ.get("TEST_DB_URL")
-
+# TEST_DATABASE_URL = os.environ.get("TEST_DB_URL")
+# PARENT_DIR = os.path.dirname(__file__)
+# GPARENT_DIR = os.path.join(PARENT_DIR, '..')
+# GGPARENT_DIR = os.path.join(GPARENT_DIR, '..')
+# CONFIG_URI = os.path.join(GGPARENT_DIR, 'development.ini')
 
 def pytest_addoption(parser):
     parser.addoption("--ini", action="store", metavar="INI_FILE")
@@ -34,7 +37,7 @@ def sqlengine(request):
 def dbtransaction(request, sqlengine):
     connection = sqlengine.connect()
     transaction = connection.begin()
-    DBSession.configure(bind=connection)
+    DBSession.configure(bind=connection, expire_on_commit=False)
 
     def teardown():
         transaction.rollback()
@@ -49,9 +52,11 @@ def dbtransaction(request, sqlengine):
 # use fixture
 # noinspection PyUnusedLocal,PyShadowingNames
 @pytest.fixture()
-def app(dbtransaction, request):
+def app(dbtransaction):
     from learning_journal import main
-    settings = get_appsettings(request.config.option.ini)
+    from webtest import TestApp
+    from pyramid.paster import get_appsettings
+    settings = get_appsettings(CONFIG_URI)
     settings['sqlalchemy.url'] = TEST_DATABASE_URL
     app = main({}, **settings)
     return TestApp(app)
@@ -60,11 +65,12 @@ def app(dbtransaction, request):
 @pytest.fixture(scope='function')
 def new_post(request):
     """Return a fresh new Entry and flush to the database."""
-    post = Post(title="test post title", text="aaaaaaaaaaaa")
+    post = Post(title="test post title", text="This is only a test")
     DBSession.add(post)
     DBSession.flush()
 
     def teardown():
+
         DBSession.delete(post)
         DBSession.flush()
 
