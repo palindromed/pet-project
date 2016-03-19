@@ -35,9 +35,15 @@ def detail_view(request):
 
 @view_config(route_name='edit', renderer='templates/edit.jinja2')
 def edit_view(request):
-    post_to_edit = DBSession.query(Post).filter(Post.id == request.matchdict['post_id']).first()
+    print("editing post numero", request.matchdict['post_id'])
+    post_to_edit = DBSession.query(Post).filter(Post.id == int(request.matchdict['post_id'])).first()
+    print(post_to_edit)
+    print("available postids:", list(DBSession.query(Post).all()))
+    # TODO: as you can see from the above debug printout, the new_post in our tests does not actually show up here
     form = PostForm(request.POST, post_to_edit)
-    if request.method == 'POST' and form.validate():
+    if not post_to_edit:
+        form.errors.setdefault('error', []).append('That post does not exist!')
+    elif request.method == 'POST' and form.validate():
         try:
             form.populate_obj(post_to_edit)
             re_route = request.route_url('detail', post_id=post_to_edit.id)

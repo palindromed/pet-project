@@ -48,10 +48,20 @@ def test_add_view(dbtransaction, app):
         'title': 'This is a title',
         'text': 'Here is some text'
     }
+    # why did they call this 'params'? it should be called 'data' or 'body' : /
     app.post('/create', params=params, status='3*')
     results = DBSession.query(Post).filter(
         Post.title == 'This is a title' and Post.text == 'Here is some text')
     assert results.count() == 1
+
+
+def test_add_view_collide(dbtransaction, app, new_post):
+    params = {
+        'title': 'test post title',
+        'text': 'Here is some text'
+    }
+    # ensure that it fails to create successfully
+    app.post('/create', params=params, status='200 *')
 
 
 def test_add_route(app, dbtransaction):
@@ -62,19 +72,26 @@ def test_add_route(app, dbtransaction):
 
 def test_edit_view(dbtransaction, app, new_post):
     """Test that edit can successfully update existing post"""
-    new_post.title = new_post.title + "I'm new"
-    new_post.text = new_post.text + "I'm new too"
+    # new_post.title = new_post.title + "I'm new"
+    # new_post.text = new_post.text + "I'm new too"
     params = {
-        'title': new_post.title,
-        'text': new_post.text
+        'title': "I'm new",
+        'text': "I'm also new"
     }
-    app.post('/edit/{}'.format(new_post.id), params=params, status='3*')
+    print("editing post numero", new_post.id)
+    response = app.post('/edit/{}'.format(new_post.id), params=params)
+    print(response.body.decode('utf-8'))
+    assert 300 <= response.status_code < 400
     results = DBSession.query(Post).filter(
-        Post.title == new_post.title and Post.text == new_post.text)
+        Post.title == params['title'] and Post.text == params['text'])
     assert results.count() == 1
 
 
+# def test_edit_view_collide(dbtransaction, app, new_post):
+
+
+
 def test_edit_route(app, dbtransaction, new_post):
-    response = app.get('/post/{}'.format(new_post.id))
+    response = app.get('/edit/{}'.format(new_post.id))
     assert response.status_code == 200
     assert new_post.text.encode('utf-8') in response.body
