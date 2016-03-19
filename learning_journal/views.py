@@ -35,7 +35,7 @@ def list_view(request):
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
 def detail_view(request):
     try:
-        post = DBSession.query(Post).filter(Post.id == int(request.matchdict['post_id'])).first()
+        post = DBSession.query(Post).get(request.matchdict['post_id'])
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
     return {'post': post}
