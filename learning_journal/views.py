@@ -1,4 +1,6 @@
 # coding=utf-8
+from __future__ import unicode_literals
+
 from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -8,7 +10,8 @@ from .models import (
     DBSession,
     Post,
     )
-from .post_form import PostForm
+
+from .post_form import ModifyPostForm
 
 
 @view_config(route_name='list', renderer='templates/list.jinja2')
@@ -23,7 +26,7 @@ def list_view(request):
 @view_config(route_name='detail', renderer='templates/detail.jinja2')
 def detail_view(request):
     try:
-        post = DBSession.query(Post).filter(Post.id == request.matchdict['post_id']).first()
+        post = DBSession.query(Post).get(request.matchdict['post_id'])
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
     return {'post': post}
@@ -31,9 +34,15 @@ def detail_view(request):
 
 @view_config(route_name='edit', renderer='templates/edit.jinja2')
 def edit_view(request):
-    post_to_edit = DBSession.query(Post).filter(Post.id == request.matchdict['post_id']).first()
-    form = PostForm(request.POST, post_to_edit)
-    if request.method == 'POST' and form.validate():
+    print("editing post numero", request.matchdict['post_id'])
+    post_to_edit = DBSession.query(Post).filter(Post.id == int(request.matchdict['post_id'])).first()
+    print(post_to_edit)
+    print("available postids:", list(DBSession.query(Post).all()))
+    # TODO: as you can see from the above debug printout, the new_post in our tests does not actually show up here
+    form = ModifyPostForm(request.POST, post_to_edit)
+    if not post_to_edit:
+        form.errors.setdefault('error', []).append('That post does not exist!')
+    elif request.method == 'POST' and form.validate():
         try:
             form.populate_obj(post_to_edit)
             re_route = request.route_url('detail', post_id=post_to_edit.id)
@@ -46,7 +55,7 @@ def edit_view(request):
 
 @view_config(route_name='add_entry', renderer="templates/edit.jinja2")
 def create_view(request):
-    form = PostForm(request.POST)
+    form = ModifyPostForm(request.POST)
     if request.method == 'POST' and form.validate():
         new_post = Post(title=form.title.data, text=form.text.data)
         try:
