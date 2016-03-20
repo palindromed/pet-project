@@ -90,8 +90,12 @@ def test_create_route_post_fail(dbtransaction, app, new_post):
     app.post('/create', params=params, status='200 *')
 
 
-def test_edit_view():
-    pass  # TODO: test the edit_view provides data for an edit page, to match test_edit_route
+def test_edit_view(dbtransaction, new_post):
+    request = DummyRequest()
+    request.matchdict['post_id'] = new_post.id
+    response_data = edit_view(request)
+    assert response_data['form'].title == new_post.title
+    assert response_data['form'].text == new_post.text
 
 
 def test_edit_view_post():
