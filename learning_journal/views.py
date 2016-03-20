@@ -10,14 +10,32 @@ from .models import (
     )
 
 
-@view_config(route_name='home', renderer='templates/mytemplate.pt')
-def my_view(request):
-    # try:
-    #     one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
-    # except DBAPIError:
-    #     return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    # return {'one': one, 'project': 'learning-journal'}
-    pass
+# @view_config(route_name='home', renderer='templates/mytemplate.pt')
+# def my_view(request):
+#     try:
+#         one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
+#     except DBAPIError:
+#         return Response(conn_err_msg, content_type='text/plain', status_int=500)
+#     return {'one': one, 'project': 'learning-journal'}
+#     pass
+
+
+@view_config(route_name='list', renderer='templates/list.jinja2')
+def list_view(request):
+    try:
+        posts = DBSession.query(Post).all()
+    except DBAPIError:
+        return Response("error!", content_type='text/plain', status_int=500)
+    return {'posts': posts}
+
+
+@view_config(route_name='detail', renderer='templates/detail.jinja2')
+def detail_view(request):
+    try:
+        post = DBSession.query(Post).filter(Post.id == request.matchdict['post_id']).first()
+    except DBAPIError:
+        return Response("error!", content_type='text/plain', status_int=500)
+    return {'post': post}
 
 
 conn_err_msg = """\

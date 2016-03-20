@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Home/List view</title>
+    </head>
+
+    <body>
+
+    {% for post in posts %}
+
+   <a href="/post/{{post.id}}" +><h3> {{ post.title }} </h3></a>
+   <p> {{ post.created.strftime('%m-%d-%Y') }} </p>
+   <p> {{ post.text }} </p>
+
+   <br>
+
+    {% endfor %}
+    <a href="/create"><input name="create" type="button" value="Create"/></a>
+
+    </body>
+
+
+
+</html>
+

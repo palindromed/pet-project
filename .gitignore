@@ -3,10 +3,11 @@
 # Virtualenv
 # http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
 .Python
-[Bb]in
-[Ii]nclude
-[Ll]ib
-[Ss]cripts
+/[Bb]in
+/[Ii]nclude
+/[Ll]ib
+/lib64
+/[Ss]cripts
 pyvenv.cfg
 pip-selfcheck.json
 ### JetBrains template

@@ -10,4 +10,3 @@ def test_models(dbtransaction):
     DBSession.flush()
     assert new_post.id is not None
     assert new_post.created is not None
-
