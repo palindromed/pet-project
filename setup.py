@@ -21,9 +21,12 @@ requires = [
 
     'future',
     'psycopg2',
+    'markdown',
+    'wtforms',
     ]
 
-tests_require = ['pytest', 'tox']
+tests_require = ['pytest', 'tox', 'WebTest']
+
 dev_requires = ['ipython', 'pyramid-ipython']
 
 setup(name='learning-journal',

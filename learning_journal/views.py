@@ -1,23 +1,14 @@
 # coding=utf-8
+from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 from pyramid.view import view_config
-
 from sqlalchemy.exc import DBAPIError
 
 from .models import (
     DBSession,
     Post,
     )
-
-
-# @view_config(route_name='home', renderer='templates/mytemplate.pt')
-# def my_view(request):
-#     try:
-#         one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
-#     except DBAPIError:
-#         return Response(conn_err_msg, content_type='text/plain', status_int=500)
-#     return {'one': one, 'project': 'learning-journal'}
-#     pass
+from .post_form import PostForm
 
 
 @view_config(route_name='list', renderer='templates/list.jinja2')
@@ -38,6 +29,37 @@ def detail_view(request):
     return {'post': post}
 
 
+@view_config(route_name='edit', renderer='templates/edit.jinja2')
+def edit_view(request):
+    post_to_edit = DBSession.query(Post).filter(Post.id == request.matchdict['post_id']).first()
+    form = PostForm(request.POST, post_to_edit)
+    if request.method == 'POST' and form.validate():
+        try:
+            form.populate_obj(post_to_edit)
+            re_route = request.route_url('detail', post_id=post_to_edit.id)
+            return HTTPFound(location=re_route)
+        except DBAPIError:
+            form.errors.setdefault('error', []).append('Title must be unique!')
+        # return Response("error!", content_type='text/plain', status_int=500)
+    return {'form': form, 'use_case': 'Edit'}
+
+
+@view_config(route_name='add_entry', renderer="templates/edit.jinja2")
+def create_view(request):
+    form = PostForm(request.POST)
+    if request.method == 'POST' and form.validate():
+        new_post = Post(title=form.title.data, text=form.text.data)
+        try:
+            DBSession.add(new_post)
+            DBSession.flush()
+            detail_id = new_post.id
+            re_route = request.route_url('detail', post_id=detail_id)
+            return HTTPFound(location=re_route)
+        except DBAPIError:
+            form.errors.setdefault('error', []).append('Title must be unique!')
+    return {'form': form, 'use_case': 'Create'}
+
+
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
@@ -53,4 +75,3 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
-

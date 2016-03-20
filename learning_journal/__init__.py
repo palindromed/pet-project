@@ -27,7 +27,8 @@ def main(global_config, **settings):
     # routes
     config.add_route('list', '/')
     config.add_route('detail', '/post/{post_id:\d+}')
-
+    config.add_route('add_entry', '/create')
+    config.add_route('edit', 'edit/{post_id:\d+}')
 
     config.scan()
     return config.make_wsgi_app()

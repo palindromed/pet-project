@@ -1,6 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Single Post{% endblock %}
+{% block content %}
 <h2> {{ post.title }}</h2>
-<p> {{ post.created.strftime('%m-%d-%Y')}} </p>
-<main> {{ post.text }} </main>
+<p> {{ post.created | datetimeformat }} </p>
+<main> {{ post.text | markdown | safe }} </main>
 <br>
 <a href="/"><input name="home" type="button" value="Home"/></a>
-<a href="/create"><input name="create" type="button" value="Create"/></a>
+<a href="{{request.route_url('edit', post_id=post.id)}}"><input name="edit" type="button" value="Edit"/></a>
+{% endblock %}
