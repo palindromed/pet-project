@@ -2,10 +2,17 @@
 
 {% block title %}Single Post{% endblock %}
 {% block content %}
-<h2> {{ post.title }}</h2>
-<p> {{ post.created | datetimeformat }} </p>
-<main> {{ post.text | markdown | safe }} </main>
-<br>
-<a href="/"><input name="home" type="button" value="Home"/></a>
-<a href="{{request.route_url('edit', post_id=post.id)}}"><input name="edit" type="button" value="Edit"/></a>
+<div class="container col-md-5 col-md-offset-2">
+    <div class="row">
+            <article class="detail">
+            <h2> {{ post.title }}</h2>
+            <p> {{ post.created | datetimeformat }} </p>
+            <section> {{ post.text | markdown | safe }} </section>
+            </article>
+            <br>
+            <div class="btn-group">
+             <a href="{{request.route_url('edit', post_id=post.id)}}" class="btn btn-primary">Edit</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

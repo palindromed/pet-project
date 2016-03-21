@@ -4,7 +4,6 @@
 
 
 {% block content %}
-<a href="/"><input name="home" type="button" value="Home"/></a>
 
     <section>
       <header>
@@ -12,18 +11,24 @@
       </header>
     </section>
 
-      <main>
-        <section >
-<form method='POST' action=''>
-        <div>{{form.title.label}}: {{ form.title() }}</div>
-        <div>{{form.text.label}}: {{ form.text() }}</div>
-
-
-          <div><ul>{% for e in form.errors %}{% for message in form.errors[e] %}<li>{{e}}: {{message}}</li>{% endfor %}{% endfor %}</div>
+    <main>
+      <div class="container col-md-5 col-md-offset-2">
+        <section>
+          <form method='POST' action='' class="form-horizontal">
+            <div class="input">{{form.title.label}}: {{ form.title() }}</div>
+            <div class="textarea">{{form.text.label}}: {{ form.text() }}</div>
+            <div>
+              <ul>
+                {% for e in form.errors %}
+                  {% for message in form.errors[e] %}
+                    <li>{{e}}: {{message}}</li>
+                    {% endfor %}
+                  {% endfor %}
+                  </ul>
+            </div>
+          </form>
         </section>
-          <div><INPUT TYPE="submit" VALUE="submit"></div>
-        </form>
-          </section>
-
-      </main>
+        <div class="edit"><INPUT TYPE="submit" VALUE="Submit"></div>
+      </div>
+    </main>
 {% endblock %}
