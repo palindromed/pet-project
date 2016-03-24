@@ -10,7 +10,7 @@ from .models import (
     DBSession,
     Base,
     )
-
+from pyramid.session import SignedCookieSessionFactory
 from .security import DefaultRoot
 
 
@@ -41,6 +41,10 @@ def main(global_config, **settings):
         authorization_policy=authorization_policy,
         root_factory=DefaultRoot,
     )
+
+    session_secret = os.environ.get('JOURNAL_SECRET', 'itsaseekrit')
+    session_factory = SignedCookieSessionFactory(session_secret, secure=True)
+    config.set_session_factory(session_factory)
 
     config.include('pyramid_jinja2')
     config.add_static_view('static', 'static', cache_max_age=3600)

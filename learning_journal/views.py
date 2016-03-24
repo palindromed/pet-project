@@ -36,7 +36,7 @@ def detail_view(request):
         return Response("error!", content_type='text/plain', status_int=500)
     return {'post': post}
 
-
+@view_config(route_name='edit', request_method='POST', check_csrf=True)
 @view_config(route_name='edit', renderer='templates/edit.jinja2',
              permission='change')
 def edit_view(request):
@@ -55,7 +55,7 @@ def edit_view(request):
     return {'form': form, 'use_case': 'Edit'}
 
 
-
+@view_config(route_name='add_entry', request_method='POST', check_csrf=True)
 @view_config(route_name='add_entry', renderer="templates/edit.jinja2",
              permission='change')
 def create_view(request):
@@ -72,7 +72,7 @@ def create_view(request):
             form.errors.setdefault('error', []).append('Title must be unique!')
     return {'form': form, 'use_case': 'Create'}
 
-
+@view_config(route_name='login', request_method='POST', check_csrf=True)
 @view_config(route_name='login', renderer='templates/login.jinja2')
 def login_view(request):
     form = UserForm(request.POST)
@@ -95,7 +95,7 @@ def log_out(request):
     headers = forget(request)
     return HTTPFound(location=request.route_url('home'), headers=headers)
 
-
+@view_config(route_name='register', request_method='POST', check_csrf=True)
 @view_config(route_name='register', renderer='templates/register.jinja2')
 def register(request):
     form = UserForm(request.POST)
