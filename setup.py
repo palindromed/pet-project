@@ -18,12 +18,16 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
+    'paginate',
+    'paginate_sqlalchemy',
+    'passlib',
 
     'future',
     'psycopg2',
     'markdown',
     'wtforms',
     ]
+
 
 
 tests_require = ['pytest-cov', 'webtest', 'tox']

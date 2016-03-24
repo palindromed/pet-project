@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-OLD
 from __future__ import unicode_literals
 
 import pytest

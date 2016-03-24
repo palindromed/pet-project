@@ -1,9 +1,10 @@
-{% extends "base.html" %}
+{% extends "base.jinja2" %}
 
 {% block title %}{{ use_case }}{% endblock %}
 
 
 {% block content %}
+{% if request.has_permission('change') %}
 
     <section>
       <header>
@@ -14,9 +15,9 @@
     <main>
       <div class="container col-md-5 col-md-offset-2">
         <section>
-          <form method='POST' action='' class="form-horizontal">
-            <div class="input">{{form.title.label}}: {{ form.title() }}</div>
-            <div class="textarea">{{form.text.label}}: {{ form.text() }}</div>
+          <form action='' method='POST' class="form-horizontal">
+            <div name='title' class="input">{{ form.title.label }}: {{ form.title() }}</div>
+            <div name='text' class="textarea">{{ form.text.label }}: {{ form.text() }}</div>
             <div>
               <ul>
                 {% for e in form.errors %}
@@ -26,9 +27,23 @@
                   {% endfor %}
                   </ul>
             </div>
+            <input type="submit" value="Submit" class="btn btn-default">
           </form>
         </section>
-        <div class="edit"><INPUT TYPE="submit" VALUE="Submit"></div>
       </div>
+      {% else %}
+
+                <div class="col-md-6">
+            <form action="{{request.route_url('login')}}" method="post" class="form">
+        <div class="form-group">
+            <label>User</label> <input type="text" name="username" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Password</label> <input type="password" name="password" class="form-control">
+            <input type="submit" value="Sign in" class="btn btn-default">
+        </div>
+    </form>
+    </div>
     </main>
+    {% endif %}
 {% endblock %}

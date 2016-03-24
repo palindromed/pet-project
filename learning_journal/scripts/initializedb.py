@@ -15,8 +15,9 @@ from ..models import (
     DBSession,
     Post,
     Base,
+    User
     )
-
+import transaction
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -40,3 +41,6 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
+    # with transaction.manager:
+    #     admin = User(username=u'admin', password=u'admin')
+    #     DBSession.add(admin)
