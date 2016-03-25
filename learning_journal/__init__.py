@@ -49,7 +49,6 @@ def main(global_config, **settings):
     config.include('pyramid_jinja2')
     config.add_static_view('static', 'static', cache_max_age=3600)
     # routes
-    # config.add_route('auth', '/auth')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_route('register', '/register')

@@ -11,7 +11,7 @@ from .models import Post
 class DefaultRoot(object):
     __acl__ = [
         (Allow, Everyone, 'read'),
-        (Allow, Authenticated, 'change'),
+        (Allow, Authenticated, ALL_PERMISSIONS),
     ]
 
     def __init__(self, request):

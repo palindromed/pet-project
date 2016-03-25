@@ -8,9 +8,12 @@ from pyramid.paster import get_appsettings
 from sqlalchemy import create_engine
 from webtest import TestApp
 
-from ..models import DBSession, Base, Post
+from ..models import DBSession, Base, Post, User
+
+from passlib.apps import custom_app_context as blogger_pwd_context
 
 TEST_DATABASE_URL = os.environ.get("TEST_DB_URL")
+AUTH_DATA = {'username': 'admin', 'password': 'secret'}
 
 
 def pytest_addoption(parser):
@@ -54,7 +57,10 @@ def app(dbtransaction, request):
     settings = get_appsettings(request.config.option.ini)
     settings['sqlalchemy.url'] = TEST_DATABASE_URL
     app = main({}, **settings)
-    return TestApp(app)
+    # jar = cookielib.CookieJar()
+    # TestApp(app, cookiejar=jar)
+    # 
+    return TestApp(app, extra_environ=dict(REMOTE_USER=b'admin'))
 
 
 @pytest.fixture(scope='function')
@@ -71,3 +77,29 @@ def new_post(request):
 
     request.addfinalizer(teardown)
     return post
+
+
+@pytest.fixture()
+def new_user(request, app):
+    user = User(username='admin', password='secret')
+    DBSession.add(user)
+    DBSession.flush()
+
+    def teardown():
+        DBSession.delete(user)
+        DBSession.flush()
+
+    request.addfinalizer(teardown)
+    return user
+
+
+@pytest.fixture()
+def authenticated_app(app):
+    res = app.get('/register')
+    form = res.forms['register']
+    form.set('username', 'admin')
+    form.set('password', 'secret')
+    res = form.submit()
+    res.follow()
+
+    return app

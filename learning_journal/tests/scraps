@@ -1,0 +1,46 @@
+
+ {% if request.authenticated_userid %}
+
+
+             <div class="col-md-6">
+            <form action="{{request.route_url('login')}}" method="post" class="form">
+        <div class="form-group">
+            <label>User</label> <input type="text" name="username" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Password</label> <input type="password" name="password" class="form-control">
+            <input type="submit" value="Sign in" class="btn btn-default">
+        </div>
+
+
+
+# @view_config(route_name='auth')
+# def sign_in(request):
+#     username = request.POST.get('username')
+#     if username:
+#         user = UserService.by_name(username)
+#         if user and user.verify_password(request.POST.get('password')):
+#             headers = remember(request, user.username)
+#         else:
+#             headers = forget(request)
+#     else:
+#         headers = forget(request)
+#     return HTTPFound(location=request.route_url('home'), headers=headers)
+
+
+
+# @view_config(route_name='add_entry', renderer="templates/edit.jinja2", permission='change')
+# def change_view(request):
+#     form = ModifyPostForm(request.POST)
+#     print('******* ', form.title.data, form.text.data, request.method)
+#     if request.method == 'POST' and form.validate():
+#         new_post = Post(title=form.title.data, text=form.text.data)
+#         try:
+#             DBSession.add(new_post)
+#             DBSession.flush()
+#             detail_id = new_post.id
+#             re_route = request.route_url('detail', post_id=detail_id)
+#             return HTTPFound(location=re_route)
+#         except DBAPIError:
+#             form.errors.setdefault('error', []).append('Title must be unique!')
+#     return {'form': form, 'use_case': 'change'}

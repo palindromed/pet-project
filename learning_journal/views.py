@@ -10,7 +10,7 @@ from .models import (
     DBSession,
     Post,
     User
-    )
+)
 from pyramid.security import remember, forget
 from .user import UserService
 from .post_form import ModifyPostForm, UserForm
@@ -35,6 +35,7 @@ def detail_view(request):
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
     return {'post': post}
+
 
 @view_config(route_name='edit', request_method='POST', check_csrf=True)
 @view_config(route_name='edit', renderer='templates/edit.jinja2',
@@ -72,6 +73,7 @@ def create_view(request):
             form.errors.setdefault('error', []).append('Title must be unique!')
     return {'form': form, 'use_case': 'Create'}
 
+
 @view_config(route_name='login', request_method='POST', check_csrf=True)
 @view_config(route_name='login', renderer='templates/login.jinja2')
 def login_view(request):
@@ -83,10 +85,8 @@ def login_view(request):
                 headers = remember(request, form.username.data)
                 return HTTPFound(location=request.route_url('home'), headers=headers)
             else:
+                return {'form': form, 'error': "Unable to validate login. Try again."}
                 headers = forget(request)
-    elif request.method == 'POST' and not form.validate():
-        return {'error': "Unable to validate login. Try again."}
-
     return {'form': form}
 
 
@@ -94,6 +94,7 @@ def login_view(request):
 def log_out(request):
     headers = forget(request)
     return HTTPFound(location=request.route_url('home'), headers=headers)
+
 
 @view_config(route_name='register', request_method='POST', check_csrf=True)
 @view_config(route_name='register', renderer='templates/register.jinja2')
@@ -104,7 +105,9 @@ def register(request):
         new_user.username = form.username.data
         new_user.set_password(form.password.data.encode('utf8'))
         DBSession.add(new_user)
-        return HTTPFound(location=request.route_url('home'))
+        headers = remember(request, form.username.data)
+        return HTTPFound(location=request.route_url('home'), headers=headers)
+
     return {'form': form}
 
 
