@@ -14,7 +14,6 @@ from pyramid.session import SignedCookieSessionFactory
 from .security import DefaultRoot
 
 
-
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
