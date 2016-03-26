@@ -2,11 +2,16 @@
 from __future__ import unicode_literals
 
 import datetime
+
+from sqlalchemy.orm import relationship
+
 from sqlalchemy import (
     Column,
     Integer,
     Unicode,
     DateTime,
+    ForeignKey,
+
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (
@@ -44,9 +49,23 @@ class User(Base):
         # is it cleartext?
         if password == self.password:
             self.set_password(password)
+
         return blogger_pwd_context.verify(password, self.password)
 
     def set_password(self, password):
         """Hash provided password to compare to user provided value later."""
-        password_hash = blogger_pwd_context.encrypt(password)
-        self.password = password_hash
+        self.password = blogger_pwd_context.encrypt(password)
+
+
+class Comment(Base):
+    """Create a comment class connect to User and Post."""
+
+    __tablename__ = 'comments'
+    id = Column(Integer, primary_key=True)
+    thoughts = Column(Unicode)
+    written = Column(DateTime, default=datetime.datetime.utcnow)
+    author_id = Column(Integer, ForeignKey('users.id'))
+    post_id = Column(Integer, ForeignKey('posts.id'))
+
+    author = relationship("User", backref='my_comments')
+    parent = relationship("Post", backref="comments")

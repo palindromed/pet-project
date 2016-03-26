@@ -2,7 +2,9 @@
 from __future__ import unicode_literals
 
 from wtforms import (Form, StringField, validators,
-                    TextAreaField, PasswordField, )
+                     TextAreaField, PasswordField, HiddenField)
+
+strip_filter = lambda x: x.strip() if x else None
 
 
 class ModifyPostForm(Form):
@@ -16,4 +18,12 @@ class UserForm(Form):
     """Create class for a form to create a user and login."""
 
     username = StringField('username', [validators.Length(min=2, max=128)])
-    password = PasswordField('password', [validators.Length(min=5, max=128)])
+    password = PasswordField('password', [validators.Length(min=5, max=128)],filters=[strip_filter])
+
+
+class CommentForm(Form):
+    """Create a text field form for adding comments to posts"""
+
+    thoughts = TextAreaField('thoughts', [validators.Length(min=1)])
+    HiddenField()
+

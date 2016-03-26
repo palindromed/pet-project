@@ -11,12 +11,10 @@ from .models import Post
 class DefaultRoot(object):
     __acl__ = [
         (Allow, Everyone, 'read'),
-        (Allow, Authenticated, ALL_PERMISSIONS),
+        (Allow, Authenticated, 'comment'),
+        (Allow, 'admin', ALL_PERMISSIONS)
     ]
 
     def __init__(self, request):
         self.request = request
-
-# def check_pw(password):
-#     return password == os.environ.get('AUTH_PASSWORD', 'Not a password')
 
