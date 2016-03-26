@@ -17,6 +17,59 @@ from .user import UserService
 from .post_form import ModifyPostForm, UserForm, CommentForm
 
 
+# @view_config(route_name='comment', request_method='POST')
+# def add_comment(request):
+#     comment = Comment()
+#     try:
+#         user = request.authenticated_userid
+#         user = DBSession.query(User).filter(User.username == user).first()
+#         path = request.POST.path.split('/')
+#         post = path[-1]
+#         post = DBSession.query(Post).filter(Post.id == post).first()
+#     except DBAPIError:
+#         return "FAIL"
+
+#     # comment = Comment()
+#     # form = CommentForm(request.POST)
+#     if request.method == 'POST' and form.validate():
+#         form.populate_obj(comment)
+#         DBSession.add(comment)
+#         comment.thoughts = form.thoughts.data
+#         comment.author = user
+#         comment.parent = post
+#         post.comments.append(comment)
+#         request.user.my_comments.append(comment)
+#         DBSession.add_all([comment, user, post])
+#         DBSession.flush()
+#         return HTTPFound(location=request.route_url('home'))
+#     return {'form': form}
+#     # pass
+
+
+@view_config(route_name='add_json', renderer='json', xhr=True)
+def add_ajax_post(request):
+   # import pdb; pdb.set_trace()
+    form = CommentForm(request.POST)
+    if request.method == 'POST' and form.validate():
+        try:
+            user = DBSession.query(User).filter(User.username == request.authenticated_userid).first()
+            print('********user', user)
+            path = request.POST['path'].split('/')
+            post = path[-1]
+            post = DBSession.query(Post).filter(Post.id == post).first()
+            comment = Comment()
+            comment.thoughts = request.POST['thoughts']
+            comment.author = user
+            comment.parent = post
+            post.comments.append(comment)
+            user.my_comments.append(comment)
+            DBSession.add_all([comment, user, post])
+            DBSession.flush()
+        except DBAPIError:
+            return {'error': 'FAIL'}
+
+    return {'comment': comment}
+
 @view_config(route_name='home', renderer='templates/list.jinja2',
              permission='read')
 def list_view(request):
@@ -30,42 +83,13 @@ def list_view(request):
 @view_config(route_name='detail', renderer='templates/detail.jinja2',
              permission='read')
 def detail_view(request):
+   # form = CommentForm()
     form = CommentForm(request.POST)
     try:
         post = DBSession.query(Post).get(request.matchdict['post_id'])
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
     return {'post': post, 'form': form}
-
-
-@view_config(route_name='comment', request_method='POST')
-def add_comment(request):
-    comment = Comment()
-    try:
-        user = request.authenticated_userid
-        user = DBSession.query(User).filter(User.username == user).first()
-        path = request.POST.path.split('/')
-        post = path[-1]
-        post = DBSession.query(Post).filter(Post.id == post).first()
-    except DBAPIError:
-        return "FAIL"
-
-    # comment = Comment()
-    # form = CommentForm(request.POST)
-    if request.method == 'POST' and form.validate():
-        form.populate_obj(comment)
-        DBSession.add(comment)
-        comment.thoughts = form.thoughts.data
-        comment.author = user
-        comment.parent = post
-        post.comments.append(comment)
-        request.user.my_comments.append(comment)
-        DBSession.add_all([comment, user, post])
-        DBSession.flush()
-        return HTTPFound(location=request.route_url('home'))
-    return {'form': form}
-    # pass
-
 
 
 @view_config(route_name='edit', request_method='POST', check_csrf=True)

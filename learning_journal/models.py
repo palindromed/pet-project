@@ -34,6 +34,16 @@ class Post(Base):
     text = Column(Unicode)
     created = Column(DateTime, default=datetime.datetime.utcnow)
 
+    def __json__(self, request):
+        return {
+                'id': self.id,
+                'title': self.title,
+                'text': self.text
+                }
+
+    def to_json(self, request=None):
+         return self.__json__(request)
+
 
 class User(Base):
     """Create user class so individuals can register and login."""
@@ -56,6 +66,15 @@ class User(Base):
         """Hash provided password to compare to user provided value later."""
         self.password = blogger_pwd_context.encrypt(password)
 
+    def __json__(self, request):
+        return {
+                'id': self.id,
+                'username': self.username,
+                }
+
+    def to_json(self, request=None):
+        return self.__json__(request)
+
 
 class Comment(Base):
     """Create a comment class connect to User and Post."""
@@ -69,3 +88,15 @@ class Comment(Base):
 
     author = relationship("User", backref='my_comments')
     parent = relationship("Post", backref="comments")
+
+
+    def __json__(self, request):
+        return {
+                'id': self.id,
+                'thoughts': self.thoughts,
+                'author': self.author,
+                'written': self.written
+                }
+
+    def to_json(self, request=None):
+         return self.__json__(request)
