@@ -13,3 +13,16 @@ $('#add-comment').submit(function(event) {
     });
 });
 
+$('#update-post').submit(function(event) {
+    event.preventDefault();
+
+    $.ajax({
+        url: '/post_json',
+        type: 'POST',
+        dataType: 'json',
+        data: $('#update-post').serialize(),
+        success: function(response){
+            console.log(response);
+        }
+    });
+});

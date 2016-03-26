@@ -38,7 +38,8 @@ class Post(Base):
         return {
                 'id': self.id,
                 'title': self.title,
-                'text': self.text
+                'text': self.text,
+                'created': self.created.isoformat()
                 }
 
     def to_json(self, request=None):
@@ -95,7 +96,7 @@ class Comment(Base):
                 'id': self.id,
                 'thoughts': self.thoughts,
                 'author': self.author,
-                'written': self.written
+                'written': self.written.isoformat()
                 }
 
     def to_json(self, request=None):

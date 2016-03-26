@@ -14,46 +14,32 @@ from .models import (
 )
 from pyramid.security import remember, forget
 from .user import UserService
-from .post_form import ModifyPostForm, UserForm, CommentForm
+from .post_form import ModifyPostForm, UserForm, CommentForm, EditForm
 
 
-# @view_config(route_name='comment', request_method='POST')
-# def add_comment(request):
-#     comment = Comment()
-#     try:
-#         user = request.authenticated_userid
-#         user = DBSession.query(User).filter(User.username == user).first()
-#         path = request.POST.path.split('/')
-#         post = path[-1]
-#         post = DBSession.query(Post).filter(Post.id == post).first()
-#     except DBAPIError:
-#         return "FAIL"
-
-#     # comment = Comment()
-#     # form = CommentForm(request.POST)
-#     if request.method == 'POST' and form.validate():
-#         form.populate_obj(comment)
-#         DBSession.add(comment)
-#         comment.thoughts = form.thoughts.data
-#         comment.author = user
-#         comment.parent = post
-#         post.comments.append(comment)
-#         request.user.my_comments.append(comment)
-#         DBSession.add_all([comment, user, post])
-#         DBSession.flush()
-#         return HTTPFound(location=request.route_url('home'))
-#     return {'form': form}
-#     # pass
+@view_config(route_name='post_json', renderer='json', xhr=True)
+def edit_ajax_post(request):
+    form = EditForm(request.POST)
+    if request.method == 'POST' and form.validate():
+       # import pdb; pdb.set_trace()
+        try:
+            post = request.POST['postid']
+            post = DBSession.query(Post).filter(Post.id == post).first()
+            post.title = request.POST['title']
+            post.text = request.POST['text']
+            DBSession.add(post)
+            DBSession.flush()
+        except DBAPIError:
+            form.errors.setdefault('error', []).append('Title must be unique!')
+    return {'form': form, 'use_case': 'Edit'}
 
 
 @view_config(route_name='add_json', renderer='json', xhr=True)
-def add_ajax_post(request):
-   # import pdb; pdb.set_trace()
+def add_ajax_comment(request):
     form = CommentForm(request.POST)
     if request.method == 'POST' and form.validate():
         try:
             user = DBSession.query(User).filter(User.username == request.authenticated_userid).first()
-            print('********user', user)
             path = request.POST['path'].split('/')
             post = path[-1]
             post = DBSession.query(Post).filter(Post.id == post).first()
@@ -65,10 +51,12 @@ def add_ajax_post(request):
             user.my_comments.append(comment)
             DBSession.add_all([comment, user, post])
             DBSession.flush()
+            return {'comment': comment}
         except DBAPIError:
-            return {'error': 'FAIL'}
+            return {'form': form, 'error': 'FAIL'}
 
-    return {'comment': comment}
+    return {'form': form}
+
 
 @view_config(route_name='home', renderer='templates/list.jinja2',
              permission='read')
@@ -83,7 +71,6 @@ def list_view(request):
 @view_config(route_name='detail', renderer='templates/detail.jinja2',
              permission='read')
 def detail_view(request):
-   # form = CommentForm()
     form = CommentForm(request.POST)
     try:
         post = DBSession.query(Post).get(request.matchdict['post_id'])
@@ -92,25 +79,32 @@ def detail_view(request):
     return {'post': post, 'form': form}
 
 
-@view_config(route_name='edit', request_method='POST', check_csrf=True)
+#@view_config(route_name='edit', request_method='POST', check_csrf=True)
 @view_config(route_name='edit', renderer='templates/edit.jinja2',
              permission='change')
 def edit_view(request):
+    # if request.method == 'POST' and request.POST['ajax_status'] == 'Success':
+    #     re_route = request.route_url('detail', post_id=post_to_edit.id)
+    #     return HTTPFound(location=re_route)
     post_to_edit = DBSession.query(Post).filter(Post.id == int(request.matchdict['post_id'])).first()
-    form = ModifyPostForm(request.POST, post_to_edit)
+    post_to_edit.id = request.matchdict['post_id']
+    form = EditForm(request.POST, post_to_edit)
     if not post_to_edit:
         form.errors.setdefault('error', []).append('That post does not exist!')
-    elif request.method == 'POST' and form.validate():
-        try:
-            form.populate_obj(post_to_edit)
-            DBSession.add(post_to_edit)
-            DBSession.flush()
-            re_route = request.route_url('detail', post_id=post_to_edit.id)
-            return HTTPFound(location=re_route)
-        except DBAPIError:
-            form.errors.setdefault('error', []).append('Title must be unique!')
-        # return Response("error!", content_type='text/plain', status_int=500)
     return {'form': form, 'use_case': 'Edit'}
+
+
+    # elif request.method == 'POST' and form.validate():
+    #     try:
+    #         form.populate_obj(post_to_edit)
+    #         DBSession.add(post_to_edit)
+    #         DBSession.flush()
+    #         re_route = request.route_url('detail', post_id=post_to_edit.id)
+    #         return HTTPFound(location=re_route)
+    #     except DBAPIError:
+    #         form.errors.setdefault('error', []).append('Title must be unique!')
+        # return Response("error!", content_type='text/plain', status_int=500)
+
 
 
 @view_config(route_name='add_entry', request_method='POST', check_csrf=True)

@@ -24,7 +24,7 @@
             {% endif %}
 
             <div class="btn-group">
-            {% if request.authenticated_userid %}
+            {% if request.has_permission('create') %}
              <a href="{{request.route_url('edit', post_id=post.id)}}" class="btn btn-primary">Edit</a>
              {% endif %}
              </main>

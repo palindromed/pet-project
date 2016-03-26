@@ -12,6 +12,7 @@ class DefaultRoot(object):
     __acl__ = [
         (Allow, Everyone, 'read'),
         (Allow, Authenticated, 'comment'),
+        (Allow, 'admin', 'create'),
         (Allow, 'admin', ALL_PERMISSIONS)
     ]
 
