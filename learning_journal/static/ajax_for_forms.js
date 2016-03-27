@@ -40,21 +40,6 @@ $('#get-comment-form').on('click', function(){
 })
 
 
-    // newPost.title = $('#title').val();
-    // newPost.category = $('#category').val();
-    // newPost.author = $('#author').val();
-    // newPost.authorUrl = $('#authorUrl').val();
-
-    // newPost.publishedOn = newPost.dateString();
-    // newPost.body = marked($('#body').val());
-    // hljs.configure({useBR: true});
-
-
-
-
-
-
-
 // $('#update-post').submit(function(event) {
 //     event.preventDefault();
 
