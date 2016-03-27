@@ -15,7 +15,7 @@
     <main>
       <div class="container col-md-5 col-md-offset-2">
         <section>
-          <form id="update-post" method='POST' class="form-horizontal">
+          <form id="{{use_case}}" method='POST' class="form-horizontal">
           <input type="hidden" name="postid" value="{{form.id.data}}"/>
             <div name='category' class="input">
             {{ form.categories.label }}: {{ form.categories() }}</div>

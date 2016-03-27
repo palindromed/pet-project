@@ -6,25 +6,26 @@
     <div class="row">
         <main>
             <article class="detail">
-            {% for category in  post.categories%}
-            <p>{{ category.name }}</p>
-            {% endfor %}
+            <p>{% for category in  post.categories%}{{ category.name }}, {% endfor %} </p>
             <h2> {{ post.title }}</h2>
             <p> {{ post.created | datetimeformat }} </p>
             <section> {{ post.text | markdown | safe }} </section>
             </article>
             <br>
             {% if post.comments %}
-            <section id='comments'>
+            <section  id='comments'>
              {% for comment in post.comments %}
              <div id="single-comment">
-             <p> {{comment.author.username}} </p>
+             <p > {{comment.author.username}} </p>
              <p> {{comment.written | datetimeformat }} </p>
-              <p >{{ comment.thoughts | markdown | safe}}</p>
+              <p>{{ comment.thoughts | markdown | safe}}</p>
               </div>
                {% endfor %}
+                {% endif %}
+                 <section id="new_comment">
+
               </section>
-            {% endif %}
+
 
             <div class="btn-group">
             {% if request.has_permission('create') %}
@@ -37,11 +38,13 @@
 {% if request.has_permission('comment') %}
 
       <div class="container col-md-5 col-md-offset-2">
+      <input id='get-comment-form' type='button' class="btn btn-default" value="Add Comment"/>
         <section>
           <form id="add-comment" method='POST' class="form-horizontal">
           <input type="hidden" name='path' value="{{ request.path }}"/>
+          <input type="hidden" id="user" value="{{ request.authenticated_userid}}"
              <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token()}}"/>
-            <div name='comment' class="textarea">{{ form.thoughts.label }}: {{ form.thoughts() }}</div>
+            <div id='comment' name='comment' class="textarea">{{ form.thoughts.label }}: {{ form.thoughts() }}</div>
             <div>
               <ul>
                 {% for e in form.errors %}

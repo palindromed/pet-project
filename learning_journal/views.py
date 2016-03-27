@@ -51,7 +51,7 @@ def add_ajax_comment(request):
             user.my_comments.append(comment)
             DBSession.add_all([comment, user, post])
             DBSession.flush()
-            return {'comment': comment}
+            return {'new_comment': comment}
         except DBAPIError:
             return {'form': form, 'error': 'FAIL'}
 
