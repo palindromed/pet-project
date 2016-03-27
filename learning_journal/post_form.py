@@ -28,6 +28,3 @@ class CommentForm(Form):
     thoughts = TextAreaField('thoughts', [validators.Length(min=1)])
     HiddenField()
 
-class EditForm(ModifyPostForm):
-    pass
-   
