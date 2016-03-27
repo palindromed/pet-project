@@ -19,6 +19,7 @@ from ..models import (
     )
 import transaction
 
+
 def usage(argv):
     cmd = os.path.basename(argv[0])
     print('usage: %s <config_uri> [var=value]\n'
@@ -34,13 +35,14 @@ def main(argv=sys.argv):
     setup_logging(config_uri)
     settings = get_appsettings(config_uri, options=options)
 
-    database_url = os.environ.get('DATABASE_URL', None)
-    if database_url:
-        settings['sqlalchemy.url'] = database_url
+    settings = get_appsettings(config_uri, options=options)
+    if 'DATABASE_URL' in os.environ:
+        settings['sqlalchemy.url'] = os.environ['DATABASE_URL']
 
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
-    # with transaction.manager:
-    #     admin = User(username=u'admin', password=u'admin')
-    #     DBSession.add(admin)
+    with transaction.manager:
+        password = os.environ.get('ADMIN_PASSWORD', 'admin')
+        admin = User(name=u'admin', password=password)
+        DBSession.add(admin)

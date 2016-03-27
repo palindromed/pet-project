@@ -18,9 +18,9 @@ def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     # Use ENV variable to access db
-    database_url = os.environ.get('DATABASE_URL', None)
-    if database_url:
-        settings['sqlalchemy.url'] = database_url
+
+    if 'DATABASE_URL' in os.environ:
+        settings['sqlalchemy.url'] = os.environ['DATABASE_URL']
 
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
