@@ -15,7 +15,7 @@ from .models import (
 )
 from pyramid.security import remember, forget
 from .user import UserService
-from .post_form import ModifyPostForm, UserForm, CommentForm, EditForm
+from .post_form import ModifyPostForm, UserForm, CommentForm
 
 
 # @view_config(route_name='post_json', renderer='json', xhr=True)

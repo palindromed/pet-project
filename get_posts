@@ -1,0 +1,2 @@
+python setup.py develop
+get_posts_api production.ini
