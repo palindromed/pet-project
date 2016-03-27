@@ -6,6 +6,9 @@
     <div class="row">
         <main>
             <article class="detail">
+            {% for category in  post.categories%}
+            <p>{{ category.name }}</p>
+            {% endfor %}
             <h2> {{ post.title }}</h2>
             <p> {{ post.created | datetimeformat }} </p>
             <section> {{ post.text | markdown | safe }} </section>

@@ -11,6 +11,7 @@ from sqlalchemy import (
     Unicode,
     DateTime,
     ForeignKey,
+    Table
 
 )
 from sqlalchemy.ext.declarative import declarative_base
@@ -25,6 +26,12 @@ DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
 
+association_table = Table('association_table', Base.metadata,
+                          Column('posts_id', Integer, ForeignKey('posts.id')),
+                          Column('category_id', Integer, ForeignKey('category.id'))
+)
+
+
 class Post(Base):
     """Class for modeling a single blog post."""
 
@@ -33,17 +40,21 @@ class Post(Base):
     title = Column(Unicode(length=128), unique=True)
     text = Column(Unicode)
     created = Column(DateTime, default=datetime.datetime.utcnow)
+    categories = relationship('Category', secondary=association_table,
+                              back_populates="posts")
+
 
     def __json__(self, request):
         return {
-                'id': self.id,
-                'title': self.title,
-                'text': self.text,
-                'created': self.created.isoformat()
-                }
+            'id': self.id,
+            'title': self.title,
+            'text': self.text,
+            'created': self.created.isoformat(),
+            'categories': self.categories
+        }
 
     def to_json(self, request=None):
-         return self.__json__(request)
+        return self.__json__(request)
 
 
 class User(Base):
@@ -69,9 +80,9 @@ class User(Base):
 
     def __json__(self, request):
         return {
-                'id': self.id,
-                'username': self.username,
-                }
+            'id': self.id,
+            'username': self.username,
+        }
 
     def to_json(self, request=None):
         return self.__json__(request)
@@ -93,11 +104,35 @@ class Comment(Base):
 
     def __json__(self, request):
         return {
-                'id': self.id,
-                'thoughts': self.thoughts,
-                'author': self.author,
-                'written': self.written.isoformat()
-                }
+            'id': self.id,
+            'thoughts': self.thoughts,
+            'author': self.author,
+            'written': self.written.isoformat()
+        }
+
+    def to_json(self, request=None):
+         return self.__json__(request)
+
+
+class Category(Base):
+    __tablename__ = 'category'
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode, unique=True)
+    posts = relationship(
+        "Post",
+        secondary=association_table,
+        back_populates="categories")
+
+    def __init__(self, name):
+        self.name = name
+
+
+    def __json__(self, request):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'posts': self.posts,
+        }
 
     def to_json(self, request=None):
          return self.__json__(request)

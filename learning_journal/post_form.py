@@ -9,9 +9,10 @@ strip_filter = lambda x: x.strip() if x else None
 
 class ModifyPostForm(Form):
     """Create class for form to edit/create a post"""
-
+    id = HiddenField()
     title = StringField('title', [validators.Length(min=4, max=128)])
     text = TextAreaField('text', [validators.Length(min=6)])
+    categories = StringField('categories', [validators.Length(max=128)])
 
 
 class UserForm(Form):
@@ -28,4 +29,5 @@ class CommentForm(Form):
     HiddenField()
 
 class EditForm(ModifyPostForm):
-    id = HiddenField()
+    pass
+   

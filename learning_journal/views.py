@@ -10,28 +10,28 @@ from .models import (
     DBSession,
     Post,
     User,
-    Comment
+    Comment,
+    Category
 )
 from pyramid.security import remember, forget
 from .user import UserService
 from .post_form import ModifyPostForm, UserForm, CommentForm, EditForm
 
 
-@view_config(route_name='post_json', renderer='json', xhr=True)
-def edit_ajax_post(request):
-    form = EditForm(request.POST)
-    if request.method == 'POST' and form.validate():
-       # import pdb; pdb.set_trace()
-        try:
-            post = request.POST['postid']
-            post = DBSession.query(Post).filter(Post.id == post).first()
-            post.title = request.POST['title']
-            post.text = request.POST['text']
-            DBSession.add(post)
-            DBSession.flush()
-        except DBAPIError:
-            form.errors.setdefault('error', []).append('Title must be unique!')
-    return {'form': form, 'use_case': 'Edit'}
+# @view_config(route_name='post_json', renderer='json', xhr=True)
+# def edit_ajax_post(request):
+#     form = EditForm(request.POST)
+#     if request.method == 'POST' and form.validate():
+#         try:
+#             post = request.POST['postid']
+#             post = DBSession.query(Post).filter(Post.id == post).first()
+#             post.title = request.POST['title']
+#             post.text = request.POST['text']
+#             DBSession.add(post)
+#             DBSession.flush()
+#         except DBAPIError:
+#             form.errors.setdefault('error', []).append('Title must be unique!')
+#     return {'form': form, 'use_case': 'Edit'}
 
 
 @view_config(route_name='add_json', renderer='json', xhr=True)
@@ -79,31 +79,30 @@ def detail_view(request):
     return {'post': post, 'form': form}
 
 
-#@view_config(route_name='edit', request_method='POST', check_csrf=True)
+@view_config(route_name='edit', request_method='POST', check_csrf=True)
 @view_config(route_name='edit', renderer='templates/edit.jinja2',
              permission='change')
 def edit_view(request):
-    # if request.method == 'POST' and request.POST['ajax_status'] == 'Success':
-    #     re_route = request.route_url('detail', post_id=post_to_edit.id)
-    #     return HTTPFound(location=re_route)
     post_to_edit = DBSession.query(Post).filter(Post.id == int(request.matchdict['post_id'])).first()
     post_to_edit.id = request.matchdict['post_id']
     form = EditForm(request.POST, post_to_edit)
     if not post_to_edit:
         form.errors.setdefault('error', []).append('That post does not exist!')
+    if request.method == 'POST' and form.validate():
+        try:
+            post_to_edit.text = form.text.data
+            post_to_edit.title = form.title.data
+            #post_to_edit.categories.append(form.categories.data)
+
+            #form.populate_obj(post_to_edit)
+            DBSession.add(post_to_edit)
+            DBSession.flush()
+            re_route = request.route_url('detail', post_id=post_to_edit.id)
+            return HTTPFound(location=re_route)
+        except DBAPIError:
+            form.errors.setdefault('error', []).append('Title must be unique!')
+        return Response("error!", content_type='text/plain', status_int=500)
     return {'form': form, 'use_case': 'Edit'}
-
-
-    # elif request.method == 'POST' and form.validate():
-    #     try:
-    #         form.populate_obj(post_to_edit)
-    #         DBSession.add(post_to_edit)
-    #         DBSession.flush()
-    #         re_route = request.route_url('detail', post_id=post_to_edit.id)
-    #         return HTTPFound(location=re_route)
-    #     except DBAPIError:
-    #         form.errors.setdefault('error', []).append('Title must be unique!')
-        # return Response("error!", content_type='text/plain', status_int=500)
 
 
 
@@ -113,9 +112,13 @@ def edit_view(request):
 def create_view(request):
     form = ModifyPostForm(request.POST)
     if request.method == 'POST' and form.validate():
+        categories = Category(name=form.categories.data)
         new_post = Post(title=form.title.data, text=form.text.data)
+        new_post.categories.append(categories)
+        categories.posts.append(new_post)
         try:
             DBSession.add(new_post)
+            new_post.categories.append(categories)
             DBSession.flush()
             detail_id = new_post.id
             re_route = request.route_url('detail', post_id=detail_id)

@@ -50,7 +50,7 @@ def main(global_config, **settings):
     # routes
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
-    config.add_route('post_json', '/post_json')
+    # config.add_route('post_json', '/post_json')
     config.add_route('register', '/register')
     config.add_route('add_json', '/add_json')
     config.add_route('home', '/')
