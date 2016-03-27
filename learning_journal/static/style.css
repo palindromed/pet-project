@@ -10,8 +10,6 @@ article {
   border-bottom: solid black;
   padding:55px;
 }
-article.detail{
-  border-bottom: none;
 
 }
 input {
@@ -22,5 +20,9 @@ textarea {
   width: 100%;
   height: 35em;
 }
-
+#single-comment {
+  margin: 5px;
+  border-bottom: solid black;
+  padding:45px;
+}
 

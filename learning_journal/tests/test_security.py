@@ -43,12 +43,12 @@ def test_access_to_create_view(authenticated_app):
 #     assert response.status_code == 403
 
 
-def test_login(app):
+def test_login(app, new_user):
     """Test that a sucessful login is possible."""
     res = app.get('/login')
     form = res.forms['login']
-    form.set('username', 'admin')
-    form.set('password', 'secret')
+    form.set('username', 'hannah')
+    form.set('password', 'banana')
     res = form.submit()
     res.follow()
     assert res.status_code == 302

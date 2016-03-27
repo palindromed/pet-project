@@ -4,18 +4,59 @@
 {% block content %}
 <div class="container col-md-5 col-md-offset-2">
     <div class="row">
+        <main>
             <article class="detail">
+            {% for category in  post.categories%}
+            <p>{{ category.name }}</p>
+            {% endfor %}
             <h2> {{ post.title }}</h2>
             <p> {{ post.created | datetimeformat }} </p>
             <section> {{ post.text | markdown | safe }} </section>
             </article>
             <br>
+            {% if post.comments %}
+            <section id='comments'>
+             {% for comment in post.comments %}
+             <div id="single-comment">
+             <p> {{comment.author.username}} </p>
+             <p> {{comment.written | datetimeformat }} </p>
+              <p >{{ comment.thoughts | markdown | safe}}</p>
+              </div>
+               {% endfor %}
+              </section>
+            {% endif %}
+
             <div class="btn-group">
-            {% if request.authenticated_userid %}
+            {% if request.has_permission('create') %}
              <a href="{{request.route_url('edit', post_id=post.id)}}" class="btn btn-primary">Edit</a>
              {% endif %}
-
+             </main>
         </div>
     </div>
 </div>
+{% if request.has_permission('comment') %}
+
+      <div class="container col-md-5 col-md-offset-2">
+        <section>
+          <form id="add-comment" method='POST' class="form-horizontal">
+          <input type="hidden" name='path' value="{{ request.path }}"/>
+             <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token()}}"/>
+            <div name='comment' class="textarea">{{ form.thoughts.label }}: {{ form.thoughts() }}</div>
+            <div>
+              <ul>
+                {% for e in form.errors %}
+                  {% for message in form.errors[e] %}
+                    <li>{{e}}: {{message}}</li>
+                    {% endfor %}
+                  {% endfor %}
+                  </ul>
+            </div>
+            <input type="submit" value="Submit" class="btn btn-default">
+          </form>
+        </section>
+      </div>
+
+    </form>
+
+{% endif %}
 {% endblock %}
