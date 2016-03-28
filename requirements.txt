@@ -1,4 +1,5 @@
 appnope==0.1.0
+APScheduler==3.0.0
 beautifulsoup4==4.4.1
 cryptacular==1.4.1
 decorator==4.0.9
