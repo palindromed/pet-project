@@ -1,4 +1,5 @@
 appnope==0.1.0
+APScheduler==3.0.0
 beautifulsoup4==4.4.1
 cryptacular==1.4.1
 decorator==4.0.9
@@ -26,6 +27,7 @@ pyramid-jinja2==2.6.2
 pyramid-mako==1.0.2
 pyramid-tm==0.12.1
 repoze.lru==0.6
+requests==2.9.1
 simplegeneric==0.8.1
 six==1.10.0
 SQLAlchemy==1.0.12
