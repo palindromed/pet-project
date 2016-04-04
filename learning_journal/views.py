@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.response import Response
 from pyramid.view import view_config
 from sqlalchemy.exc import DBAPIError, IntegrityError
-
+from sqlalchemy import desc
 from .models import (
     DBSession,
     Post,
@@ -62,7 +62,7 @@ def add_ajax_comment(request):
              permission='read')
 def list_view(request):
     try:
-        posts = DBSession.query(Post).all()
+        posts = DBSession.query(Post).order_by(desc(Post.created)).all()
     except DBAPIError:
         return Response("error!", content_type='text/plain', status_int=500)
     return {'posts': posts}
