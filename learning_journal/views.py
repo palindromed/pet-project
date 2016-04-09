@@ -85,7 +85,7 @@ def detail_view(request):
 def edit_view(request):
     post_to_edit = DBSession.query(Post).filter(Post.id == int(request.matchdict['post_id'])).first()
     post_to_edit.id = request.matchdict['post_id']
-    form = EditForm(request.POST, post_to_edit)
+    form = ModifyPostForm(request.POST, post_to_edit)
     if not post_to_edit:
         form.errors.setdefault('error', []).append('That post does not exist!')
     if request.method == 'POST' and form.validate():
@@ -112,13 +112,20 @@ def edit_view(request):
 def create_view(request):
     form = ModifyPostForm(request.POST)
     if request.method == 'POST' and form.validate():
-        categories = Category(name=form.categories.data)
+
         new_post = Post(title=form.title.data, text=form.text.data)
-        new_post.categories.append(categories)
-        categories.posts.append(new_post)
+        cats = form.categories.data
+        instance = DBSession.query(Category).filter(Category.name == cats).first()
+        if instance:
+            new_post.categories.append(instance)
+            instance.posts.append(new_post)
+        else:
+            new_cat = Category(name=form.categories.data)
+            new_post.categories.append(new_cat)
+            new_cat.posts.append(new_post)
         try:
             DBSession.add(new_post)
-            new_post.categories.append(categories)
+            # new_post.categories.append(categories)
             DBSession.flush()
             detail_id = new_post.id
             re_route = request.route_url('detail', post_id=detail_id)
